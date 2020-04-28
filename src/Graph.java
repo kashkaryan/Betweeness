@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
@@ -28,6 +29,7 @@ import java.util.Set;
 public class Graph {
     //list of nodes' hashMap adjacency lists
     private ArrayList<HashMap<Integer, Integer>> totList;
+    private ArrayList<HashMap<Integer, Integer>> betweeness;
     
     
     /**
@@ -45,8 +47,10 @@ public class Graph {
             throw new IllegalArgumentException();
         }
         totList = new ArrayList<HashMap<Integer,Integer>>(n); //size of adj list
+        betweeness = new ArrayList<HashMap<Integer,Integer>>(n); //size of adj list
         for (int i = 0; i < n; i++) { //O(n) time to go through each of n nodes
             totList.add(new HashMap<Integer, Integer>()); //add adj list for each node
+            betweeness.add(new HashMap<Integer, Integer>()); //add adj list for each node
         }
     }
 
@@ -109,6 +113,32 @@ public class Graph {
         }
         return (totList.get(u).get(v)); //constant to get weight
     }
+    
+    /**
+     * Returns the weight of an the directed edge {@code u-v}.
+     * <p/>
+     * Do NOT modify this method header.
+     *
+     * @param u source vertex
+     * @param v target vertex
+     * @return the edge weight of {@code u-v}
+     * @throws NoSuchElementException   if the {@code u-v} edge does not exist
+     * @throws IllegalArgumentException if a specified vertex does not exist
+     * @implSpec This method should run in O(1) time.
+     */
+    public int getBetweeness(int u, int v) {
+        //checks in constant time using hasEdge constant method
+        if (!hasEdge(u,v)) {
+            throw new NoSuchElementException();
+        }
+        if (totList.size() <= u || u < 0) {
+            throw new IllegalArgumentException();
+        }
+        if (totList.size() <= v || v < 0) {
+            throw new IllegalArgumentException();
+        }
+        return (betweeness.get(u).get(v)); //constant to get weight
+    }
 
     /**
      * Creates an edge from {@code u} to {@code v} if it does not already exist. A call to this
@@ -139,6 +169,7 @@ public class Graph {
             return false;
         } else { //constant time to add edge, and return true
             totList.get(u).put(v, weight);
+            betweeness.get(u).put(v, 0);
             return true;
         }
     }
@@ -202,8 +233,21 @@ public class Graph {
         return newGraph;
     }
     
+    public static void populateBetweeness(Graph g) {
+        for (int i = 0; i < g.getSize(); i++) {
+            for (int j = i + 1; j < g.getSize(); j++) {
+                List<Integer> path = Dijkstra.getShortestPath(g, i, j);
+                for (int k = 0; k < path.size() - 1; k++) {
+                    int bet = g.getBetweeness(path.get(k), path.get(k + 1));
+                    bet++;
+                    g.betweeness.get(i).put(j, bet);
+                }
+            }
+        }
+    }
+    
     public static void main(String args[]) throws IOException {
         Graph cur = createGraphFile(new File("facebook_combined.txt"));
-        System.out.print(Dijkstra.getShortestPath(cur, 0, 4038));
+        populateBetweeness(cur);
     }
 }
