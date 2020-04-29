@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -162,14 +163,42 @@ public class Graph {
         if (totList.size() <= v || v < 0) {
             throw new IllegalArgumentException();
         }
-        if (u == v) {
-            throw new IllegalArgumentException();
-        }
         if (hasEdge(u,v)) { //checks if edge exists in constant time then does not modify
             return false;
         } else { //constant time to add edge, and return true
             totList.get(u).put(v, weight);
             betweeness.get(u).put(v, 0);
+            return true;
+        }
+    }
+    
+    /**
+     * Creates an edge from {@code u} to {@code v} if it does not already exist. A call to this
+     * method should <em>not</em> modify the edge weight if the {@code u-v} edge already exists.
+     * <p/>
+     * Do NOT modify this method header.
+     *
+     * @param u      the source vertex to connect
+     * @param v      the target vertex to connect
+     * @param weight the edge weight
+     * @return {@code true} if the graph changed as a result of this call, false otherwise (i.e., if
+     * the edge is already present)
+     * @throws IllegalArgumentException if a specified vertex does not exist or if u == v
+     * @implSpec This method should run in O(1) time
+     */
+    public boolean deleteEdge(int u, int v) {
+        //checks in constant time
+        if (totList.size() <= u || u < 0) {
+            throw new IllegalArgumentException();
+        }
+        if (totList.size() <= v || v < 0) {
+            throw new IllegalArgumentException();
+        }
+        if (!hasEdge(u,v)) { //checks if edge exists in constant time then does not modify
+            return false;
+        } else { //constant time to add edge, and return true
+            totList.get(u).remove(v);
+            betweeness.get(u).remove(v);
             return true;
         }
     }
@@ -233,21 +262,50 @@ public class Graph {
         return newGraph;
     }
     
-    public static void populateBetweeness(Graph g) {
+    public static int[] populateBetweeness(Graph g) {
+        int[] max = {-1, -1, -1};
         for (int i = 0; i < g.getSize(); i++) {
-            for (int j = i + 1; j < g.getSize(); j++) {
+            for (int j = 0; j < g.getSize(); j++) {
+                if (i == j) {
+                    continue;
+                }
                 List<Integer> path = Dijkstra.getShortestPath(g, i, j);
                 for (int k = 0; k < path.size() - 1; k++) {
-                    int bet = g.getBetweeness(path.get(k), path.get(k + 1));
-                    bet++;
-                    g.betweeness.get(i).put(j, bet);
+                    
+                    int betw = g.getBetweeness(path.get(k), path.get(k + 1));
+                    betw++;
+                    if (betw > max[0]) {
+                        max[0] = betw;
+                        max[1] = path.get(k);
+                        max[2] = path.get(k + 1);
+                    }
+                    g.betweeness.get(path.get(k)).put(path.get(k + 1), betw);
                 }
             }
         }
+        System.out.println("max " + max[0] + " " + max[1] + " " + max[2]);
+        return max;
+    }
+    
+    //finds and removes the node with the highest betweeness
+    public static void girvNewman (Graph g) {
+        int[] max = populateBetweeness(g);
+        g.deleteEdge(max[1], max[2]);
+        g.betweeness = new ArrayList<HashMap<Integer,Integer>>(g.getSize()); //size of adj list
+        for (int i = 0; i < g.getSize(); i++) { //O(n) time to go through each of n nodes
+            g.betweeness.add(new HashMap<Integer, Integer>()); //add adj list for each node
+            Set<Integer> keys = g.totList.get(i).keySet();
+            Iterator<Integer> keysIt = keys.iterator();
+            for (int j = 0; j < keys.size(); j++) {
+                g.betweeness.get(i).put(keysIt.next(), 0);
+            }
+        }
+        
     }
     
     public static void main(String args[]) throws IOException {
-        Graph cur = createGraphFile(new File("facebook_combined.txt"));
-        populateBetweeness(cur);
+        Graph cur = createGraphFile(new File("email-Eu-core.txt"));
+        girvNewman(cur);
+        girvNewman(cur);
     }
 }
