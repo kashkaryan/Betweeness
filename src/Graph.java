@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class Graph {
     //list of nodes' hashMap adjacency lists
     private ArrayList<HashMap<Integer, Integer>> totList;
     private ArrayList<HashMap<Integer, Integer>> betweeness;
-    
+    private HashMap<Integer, ArrayList<Integer>> strongTies;
     
     /**
      * Initializes a graph of size {@code n}. All valid vertices in this graph thus have integer
@@ -49,10 +50,16 @@ public class Graph {
         }
         totList = new ArrayList<HashMap<Integer,Integer>>(n); //size of adj list
         betweeness = new ArrayList<HashMap<Integer,Integer>>(n); //size of adj list
+        strongTies = new HashMap<Integer, ArrayList<Integer>>(n);
         for (int i = 0; i < n; i++) { //O(n) time to go through each of n nodes
             totList.add(new HashMap<Integer, Integer>()); //add adj list for each node
             betweeness.add(new HashMap<Integer, Integer>()); //add adj list for each node
+//            strongTies.put(new HashMap<Integer, Integer>());
         }
+    }
+    
+    public ArrayList<HashMap<Integer,Integer>> getList() {
+    	return totList;
     }
 
     /**
@@ -140,6 +147,7 @@ public class Graph {
         }
         return (betweeness.get(u).get(v)); //constant to get weight
     }
+    
 
     /**
      * Creates an edge from {@code u} to {@code v} if it does not already exist. A call to this
@@ -287,6 +295,90 @@ public class Graph {
         return max;
     }
     
+    //calculates neighborhood overlap of two nodes
+    public double neighOverlap (Graph g, Integer nodeA, Integer nodeB) {
+    	Set<Integer> neighborsA = outNeighbors(nodeA);
+    	Set<Integer> neighborsB = outNeighbors(nodeB);
+    	HashSet<Integer> intersection = new HashSet<Integer>();
+    	HashSet<Integer> union = new HashSet<Integer>();
+    	double overlap = 0.0;
+    	
+    	for (Integer a : neighborsA) {
+    		for (Integer b : neighborsB) {
+    			if (a == b) {
+    				intersection.add(a);
+    			}
+    		}
+    	}
+    	union.addAll(neighborsA);
+    	union.addAll(neighborsB);
+    	union.removeAll(intersection);
+    	
+    	//calculate neighborhood overlap
+    	overlap = (double) intersection.size() / (double) union.size();
+    	return overlap;
+    }
+    
+    //calculate average neighborhood overlap
+    public double avgNeighOverlap (Graph g) {
+    	double numNodes = (double) g.getSize();
+    	double sum = 0.0;
+    	for (int i = 0; i < g.getSize(); i++) {
+    		for (int j = 0; j < g.getSize(); j++) {
+	    		if (g.hasEdge(i, j)) {
+	    			sum = sum + neighOverlap(g, i, j);
+	    		}
+    		}
+    	}
+    	System.out.println(sum / numNodes);
+    	return sum / numNodes;
+    }
+    
+    //assigns strong and weak ties based on weight
+    public void assignTies (Graph g) {    	
+    	for (int i = 0; i < g.getSize(); i++) {
+    		ArrayList<Integer> arr = new ArrayList<Integer>();
+    		for (int j = 0; j < g.getSize(); j++) {
+    			if (i == j) {
+                    continue;
+                }
+    			if (hasEdge(i, j)) {
+    				if (getWeight(i, j) > 50) { //add edge to map of strong ties
+    					arr.add(j);
+    					g.strongTies.put(i, arr);
+    				} 
+    			}
+    		}		
+    	}
+    }
+    
+    //finds violations to triadic closures
+    public void triadic (Graph g) {
+    	assignTies(g);
+    	
+    	//maps node that violates with pair of nodes it has strong ties with    	
+    	HashMap<Integer, ArrayList<Integer>> violations = new HashMap<Integer, ArrayList<Integer>>();
+    	
+    	for (Integer i : strongTies.keySet()) {
+    		if (strongTies.containsKey(i) && strongTies.get(i).size() >= 2) {
+	    		for (int k = 0; k < strongTies.get(i).size(); k++) {
+					for (int l = k + 1; l < strongTies.get(i).size(); l++) {						
+						if (!hasEdge(strongTies.get(i).get(k), strongTies.get(i).get(l))) {
+							ArrayList<Integer> pair = new ArrayList<Integer>();
+							pair.add(strongTies.get(i).get(k));
+							pair.add(strongTies.get(i).get(l));
+							violations.put(i, pair);
+							break;
+						} 
+					}
+				} 
+    		} 
+    	}
+    	System.out.println("number of violations: " + violations.size());
+		System.out.println(violations.keySet()); //prints nodes that have violations
+    }
+    
+    
     //finds and removes the node with the highest betweeness
     public static void girvNewman (Graph g) {
         int[] max = populateBetweeness(g);
@@ -300,12 +392,14 @@ public class Graph {
                 g.betweeness.get(i).put(keysIt.next(), 0);
             }
         }
-        
     }
+  
     
     public static void main(String args[]) throws IOException {
-        Graph cur = createGraphFile(new File("email-Eu-core.txt"));
-        girvNewman(cur);
-        girvNewman(cur);
+        Graph cur = createGraphFile(new File("text.txt"));
+//        girvNewman(cur);
+//        girvNewman(cur);
+        cur.triadic(cur);
+        cur.avgNeighOverlap(cur);
     }
 }
