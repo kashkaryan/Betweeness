@@ -277,11 +277,13 @@ public class Graph {
                 if (i == j) {
                     continue;
                 }
+                //Use Dijkstra to get all shortest paths
                 List<Integer> path = Dijkstra.getShortestPath(g, i, j);
                 for (int k = 0; k < path.size() - 1; k++) {
                     
                     int betw = g.getBetweeness(path.get(k), path.get(k + 1));
                     betw++;
+                    //Get the max betweenness in the graph along with the edge
                     if (betw > max[0]) {
                         max[0] = betw;
                         max[1] = path.get(k);
