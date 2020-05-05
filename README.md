@@ -1,4 +1,4 @@
-# NETShw5
+# Network Betweeness
 
 We created a Graph.java class to handle reading in the file, creating the graph, populating betweenness for edges, running the Girvan-Newman algorithm, finding the triadic closure violations, and finding the average neighborhood overlap. There are also methods contained in this class to find the number of outward neighbors for nodes, if two nodes share an edge, and to get the number of nodes in the graph, or the graph size. The Dijkstra.java class runs the Dijkstra algorithm to populate betweenness for edges. 
 
