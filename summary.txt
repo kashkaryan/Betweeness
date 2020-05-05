@@ -1,3 +1,5 @@
+"The Implications of Betweeness in a Social Network" by Kachik Ashkaryan and Jenny Wan
+
 For our NETS project, we focused mostly on social networks. In class we learned about metrics to 
 measure the strength of a social network in the context of strong relationships different people
 have with one another. Two of these are neighborhood overlap and the strong triadic closure 

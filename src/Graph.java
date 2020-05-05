@@ -396,17 +396,18 @@ public class Graph {
   
     
     public static void main(String args[]) throws IOException {
-        Graph cur = createGraphFile(new File("text.txt"));
+//        Graph cur = createGraphFile(new File("tribe.txt"));
+//        Graph cur = createGraphFile(new File("email-network.txt"));
 //        girvNewman(cur);
 //        girvNewman(cur);
-        System.out.println(0 + " iter: ");
-        cur.triadic(cur);
-        cur.avgNeighOverlap(cur);
-        for (int i = 1; i < 40; i++) {
-            System.out.println(i + " iter: ");
-            girvNewman(cur);
-            cur.triadic(cur);
-            cur.avgNeighOverlap(cur);
-        }
+//        System.out.println(0 + " iter: ");
+//        cur.triadic(cur);
+//        cur.avgNeighOverlap(cur);
+//        for (int i = 1; i < 40; i++) {
+//            System.out.println(i + " iter: ");
+//            girvNewman(cur);
+//            cur.triadic(cur);
+//            cur.avgNeighOverlap(cur);
+//        }
     }
 }
