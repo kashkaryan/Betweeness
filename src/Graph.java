@@ -399,7 +399,14 @@ public class Graph {
         Graph cur = createGraphFile(new File("text.txt"));
 //        girvNewman(cur);
 //        girvNewman(cur);
+        System.out.println(0 + " iter: ");
         cur.triadic(cur);
         cur.avgNeighOverlap(cur);
+        for (int i = 1; i < 40; i++) {
+            System.out.println(i + " iter: ");
+            girvNewman(cur);
+            cur.triadic(cur);
+            cur.avgNeighOverlap(cur);
+        }
     }
 }

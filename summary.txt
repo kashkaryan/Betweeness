@@ -1,0 +1,24 @@
+For our NETS project, we focused mostly on social networks. In class we learned about metrics to 
+measure the strength of a social network in the context of strong relationships different people
+have with one another. Two of these are neighborhood overlap and the strong triadic closure 
+property. The former is the ratio of neighbors two nodes have in common, while the latter
+deconstructs the power of a strong bond and its ability to create triadic friendships. In our
+project, we wanted to test the value of the edge with the highest betweeness, and its influence on 
+these two metrics. Therefore, we implemented the Girvan-Newman algorithm to calculate the betweeness
+of every edge and remove the highest betweenesss while comparing the average neighborhood overlap 
+and the number of nodes who violate the triadic closure principle before and after. We repeated 
+the experiment on a small data set on tribe relationships in a small portion of Subsaharan Africa 
+and on a larger data set of a network of email conversations between professors at the school of 
+the University of Irvine, California. Between the data sets, we paid close attention to the
+difference in volatility of the metrics. 
+
+We stuck to the category of social networks for the assignment a well as graph algorithms as we 
+needed to implement Dijkstra's algorithm to find all the shortest paths that go through an edge.
+Our deliverables are that for an empirical analysis, with data to back up our hypothesis in our 
+write up.
+
+In terms of how we divided the work, Kachik was in charge of implementing the graph data structure,
+importing the data, and implementing the Girvan-Newman algorithm using Dijkstra's. Jenny was in
+charge of finding reasonable data to import, and measuring the neighborhood overlap, and triadic 
+closure. Finally, together we recorded the data we wanted, created a summary report, and 
+analyzed the data we found in terms of a hypothesis.
