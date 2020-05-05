@@ -7,7 +7,7 @@ project, we wanted to test the value of the edge with the highest betweeness, an
 these two metrics. Therefore, we implemented the Girvan-Newman algorithm to calculate the betweeness
 of every edge and remove the highest betweenesss while comparing the average neighborhood overlap 
 and the number of nodes who violate the triadic closure principle before and after. We repeated 
-the experiment on a small data set on tribe relationships in a small portion of Subsaharan Africa 
+the experiment on a small data set on tribe relationships in a small portion of New Guinea 
 and on a larger data set of a network of email conversations between professors at the school of 
 the University of Irvine, California. Between the data sets, we paid close attention to the
 difference in volatility of the metrics. 
